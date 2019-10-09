@@ -28,16 +28,27 @@ function App() {
     .then(response => response.json())
     .then(json => setFilmes(json.Search));
   }
+
   const favoritarFilme = (id) => {
     const listaFilmesAtualizados = filmes.map(filme => {
       return filme.imdbID === id ? {...filme, favorito: !filme.favorito} : filme;
     });
     setFilmes(listaFilmesAtualizados);
   }
+
   const compararFilme = (filme) => {
-    filmesParaComparar.length > 0 ? setFilmesParaComparar([...filmesParaComparar, {...filme, posicao: 'justify-content-md-left'}]) : setFilmesParaComparar([...filmesParaComparar, {...filme, posicao: 'justify-content-md-center'}])
+    const listaFilmesAtualizados = filmes.map(f => {
+      return f.imdbID === filme.imdbID ? {...f, comparar: !f.comparar} : f;
+    });
+    setFilmes(listaFilmesAtualizados);
+    filmesParaComparar.length > 0 ? setFilmesParaComparar([...filmesParaComparar, filme]) : setFilmesParaComparar([...filmesParaComparar, filme])
   }
+  
   const encerrarComparacaoFilmes = () => {
+    const listaFilmesAtualizados = filmes.map(f => {
+      return {...f, comparar: false};
+    });
+    setFilmes(listaFilmesAtualizados);    
     setFilmesParaComparar([])
   }
 
@@ -62,12 +73,14 @@ function App() {
                 <div className="card-body">
                   <h5 style={styleTitle} className="card-title">{filme.Title}</h5>
                   <p className="card-text"><strong>imdbID: </strong>{filme.imdbID}</p>
-                  <p className="card-text"><strong>Ano: </strong>{filme.Year}</p>
+                  <p className="card-text"><strong>Tipo: </strong>{filme.Type}</p>
+                  <p className="card-text"><strong>Ano: </strong>{filme.Year}</p>                  
                   {filme.favorito && <h6><span className="badge badge-success">Filme favorito!</span></h6>}                
                   {filme.favorito && <button onClick={() => favoritarFilme(filme.imdbID)} href="#" className="btn btn-danger">Desfavoritar</button>}
                   {!filme.favorito && <button onClick={() => favoritarFilme(filme.imdbID)} href="#" className="btn btn-primary">Favoritar</button>}                
                   &nbsp;
-                  <button onClick={() => compararFilme(filme)} href="#" className="btn btn-secondary">Comparar</button>
+                  {filme.comparar && <button onClick={() => compararFilme(filme)} href="#" className="btn btn-success">Comparar</button>}
+                  {!filme.comparar && <button onClick={() => compararFilme(filme)} href="#" className="btn btn-secondary">Comparar</button>}
                 </div>
               </div>          
           </div>          
@@ -76,17 +89,18 @@ function App() {
       </div>    
     }
 
-    {filmesParaComparar.length == 2 &&
-    <div className="container">
+    {filmesParaComparar.length == 2 &&    
+    <div className="container">      
       <div className="row">
         {filmesParaComparar && filmesParaComparar.map(filme => {
           return (
-            <div class="col-md-6">
+            <div class="col-md-4">
               <div className="card" style={styleCard}>
                 <img src={filme.Poster} className="card-img-top" alt="..."/>
                 <div className="card-body">
                   <h5 style={styleTitle} className="card-title">{filme.Title}</h5>
                   <p className="card-text"><strong>imdbID: </strong>{filme.imdbID}</p>
+                  <p className="card-text"><strong>Tipo: </strong>{filme.Type}</p>
                   <p className="card-text"><strong>Ano: </strong>{filme.Year}</p>
                   {filme.favorito && <h6><span className="badge badge-success">Filme favorito!</span></h6>}
                 </div>
